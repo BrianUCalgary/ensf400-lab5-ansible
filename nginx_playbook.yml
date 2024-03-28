@@ -1,0 +1,28 @@
+- name: Play - Install and configure Nginx as a LoadBalancer
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Update cache
+      apt:
+        update_cache: yes   
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Copy the Nginx config file to /etc/nginx/sites-available
+      copy:
+        src: ./nginx.cfg
+        dest: /etc/nginx/sites-available/nginx.cfg
+
+    - name: Create symlink of the config file at /etc/nginx/sites-enabled
+      file:
+        src: /etc/nginx/sites-available/nginx.cfg
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      
+    - name: Restart nginx to apply changes
+      service:
+        name: nginx
+        state: restarted
